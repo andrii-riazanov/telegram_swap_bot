@@ -5,6 +5,7 @@ from time import sleep
 import praw
 # from config import TOKEN, CHAT, RCLIENT_ID, RCLIENT_SECRET
 import datetime
+from datetime import timezone
 import re
 import os
 
@@ -22,18 +23,19 @@ have = re.compile(r".*\[H\].*(3080\s*[Tt][Ii]|3090).*[W]")
 want = re.compile(r".*\[W\].*3070")
 
 time_script_started = datetime.datetime.now()
+EST = timezone(datetime.timedelta(hours=-4))
 
 for submission in subreddit.stream.submissions():
     title = submission.title
     time = submission.created_utc
     timestamp = datetime.datetime.fromtimestamp(time)
-    if (time_script_started > timestamp) and (time_script_started - timestamp).seconds > 180:
+    if (time_script_started > timestamp) and (time_script_started - timestamp).seconds > 1800:
         continue
     normal_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
     if have.match(title) or want.match(title):
         time = submission.created_utc
         timestamp = datetime.datetime.fromtimestamp(time)
-        normal_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        normal_time = timestamp.astimezone(EST).strftime('%Y-%m-%d %H:%M:%S')
         swap_bot.send_message(CHAT, 
 f"""{normal_time}
 {title}
