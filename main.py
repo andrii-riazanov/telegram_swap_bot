@@ -20,7 +20,6 @@ subreddit = reddit.subreddit("hardwareswap")
 
 have = re.compile(r".*\[H\].*(3080\s*[Tt][Ii]|3090).*[W]")
 want = re.compile(r".*\[W\].*3070")
-want = re.compile(r".*")
 
 time_script_started = datetime.datetime.now()
 
