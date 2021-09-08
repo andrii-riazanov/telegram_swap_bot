@@ -29,15 +29,17 @@ for submission in subreddit.stream.submissions():
     title = submission.title
     time = submission.created_utc
     timestamp = datetime.datetime.fromtimestamp(time)
-    if (time_script_started > timestamp) and (time_script_started - timestamp).seconds > 180:
+    if (time_script_started > timestamp) and (time_script_started - timestamp).seconds > 1800:
         continue
-    normal_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    normal_time = timestamp.astimezone(EST).strftime('%Y-%m-%d %H:%M:%S')
+    print(f"New post on the subreddit on {normal_time}\nChecking if it matches the search query. Title:" )
+    print(f"\t {title}")
     if have.match(title) or want.match(title):
-        time = submission.created_utc
-        timestamp = datetime.datetime.fromtimestamp(time)
-        normal_time = timestamp.astimezone(EST).strftime('%Y-%m-%d %H:%M:%S')
+        print("=====\nPasses the query, sending Telegram message!\n=====")
         swap_bot.send_message(CHAT, 
 f"""{normal_time}
 {title}
 {submission.url}
 """, disable_web_page_preview=True)
+
+    print("")
